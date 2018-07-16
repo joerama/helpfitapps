@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1072026961415",
+    "firebase_url": "https://helpfit-app.firebaseio.com",
+    "project_id": "helpfit-app",
+    "storage_bucket": "helpfit-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072026961415:android:1687ff75b61dedab",
+        "android_client_info": {
+          "package_name": "com.example.ramajoe.helpfitapps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072026961415-nl0suveuf44o657n60b206h5mmsus5ud.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ramajoe.helpfitapps",
+            "certificate_hash": "940e416369e0f591b8a8de344800df19513ed743"
+          }
+        },
+        {
+          "client_id": "1072026961415-l902fdime4h1jr00c4sfporrvmbc51a5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5-nPbrN4qtZka-3bxsVz-pGykesX_OUg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072026961415-l902fdime4h1jr00c4sfporrvmbc51a5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
