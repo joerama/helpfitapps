@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ramajoe.helpfitapps.Model.Review;
 import com.example.ramajoe.helpfitapps.Model.Training;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -76,7 +75,7 @@ public class TrainerHistoryFinished extends Fragment {
                 holder.viewRating.setVisibility(View.VISIBLE);
                 holder.ratingAverageLayout.setVisibility(View.VISIBLE);
 
-                holder.averageRating.setRating(4.70f);
+                //holder.averageRating.setEnabled(false);
 
                 holder.cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -114,6 +113,27 @@ public class TrainerHistoryFinished extends Fragment {
                             Intent review = new Intent(getContext(), ReviewActivity.class);
                             review.putExtra("trainingKey",model.getSessionID());
                             startActivity(review);
+                    }
+                });
+
+                DatabaseReference hasChild = training.child(model.getSessionID()).child("averageRating").getRef();
+                hasChild.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            double af = (double) snapshot.getValue();
+                            float fl = (float) af;
+                            holder.averageRating.setRating(fl);
+                        }
+                        else {
+                            float startRating = 0;
+                            holder.averageRating.setRating(startRating);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
 

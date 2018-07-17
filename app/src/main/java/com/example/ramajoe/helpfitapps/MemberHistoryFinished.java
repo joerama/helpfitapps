@@ -18,15 +18,10 @@ import android.widget.Toast;
 import com.example.ramajoe.helpfitapps.Common.Common;
 import com.example.ramajoe.helpfitapps.Model.Review;
 import com.example.ramajoe.helpfitapps.Model.Training;
-import com.example.ramajoe.helpfitapps.Model.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,14 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
-import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
-import dmax.dialog.SpotsDialog;
 
 public class MemberHistoryFinished extends Fragment{
 
@@ -171,6 +161,71 @@ public class MemberHistoryFinished extends Fragment{
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
+                                DatabaseReference totalRev = training.child(key).child("totalReviewed").getRef();
+                                totalRev.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.exists()){
+                                            Long numOfPeople = (Long) dataSnapshot.getValue();
+                                            float peoples = Float.valueOf(numOfPeople);
+                                            float addPeoples = peoples+1;
+                                            training.child(key).child("totalReviewed").setValue(addPeoples);
+                                        }
+                                        else{
+                                            training.child(key).child("totalReviewed").setValue(1);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                //+++++++++
+                                DatabaseReference hasChild = training.child(key).child("averageRating").getRef();
+                                hasChild.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(final DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {
+                                            DatabaseReference totalRev = training.child(key).child("totalReviewed").getRef();
+                                            totalRev.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    Long numOfPeople = (Long) dataSnapshot.getValue();
+                                                    float peoples = Float.valueOf(numOfPeople);
+                                                    double af = (double) snapshot.getValue();
+                                                    float oldRating = (float)af;
+                                                    float newRating = rating.getRating();
+                                                    float average = (oldRating+newRating)/peoples;
+                                                    training.child(key).child("averageRating").setValue(average); //bermasalah
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+
+                            /*Long af = (Long) snapshot.getValue();
+                            float oldRating = Float.valueOf(af);
+                            float newRating = rating.getRating();
+                            float average = (oldRating+newRating)/totalUser;
+                            training.child(key).child("averageRating").setValue(average);*/
+                                        }
+                                        else {
+                                            training.child(key).child("averageRating").setValue(rating.getRating());
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                                //+++++++++
+
                                 Toast.makeText(getContext(), "Success submit ! ", Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -181,23 +236,8 @@ public class MemberHistoryFinished extends Fragment{
                             }
                         });
 
-                DatabaseReference hasChild = training.child(key).child("averageRating").getRef();
-                hasChild.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        if (snapshot.exists())) {
-                            holder.giveRatingBtn.setText("Reviewed");
-                            holder.giveRatingBtn.setEnabled(false);
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                training.child(key).child("averageRating").setValue(rating.getRating());
+                //training.child(key).child("averageRating").setValue(rating.getRating());
             }
         });
 
