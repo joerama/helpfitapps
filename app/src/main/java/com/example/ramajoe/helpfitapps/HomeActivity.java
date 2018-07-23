@@ -1,8 +1,10 @@
 package com.example.ramajoe.helpfitapps;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +18,8 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,8 +32,13 @@ import android.widget.Toast;
 
 import com.example.ramajoe.helpfitapps.Common.Common;
 import com.example.ramajoe.helpfitapps.Model.Training;
+import com.example.ramajoe.helpfitapps.Model.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,18 +46,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import dmax.dialog.SpotsDialog;
 
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener  {
 
-    private FirebaseDatabase database;
     private FirebaseAuth auth;
-    private DatabaseReference training;
-    private DatabaseReference users;
+    private DatabaseReference training, users, mainUsers;
     private RecyclerView trainingRV;
     private FirebaseRecyclerAdapter<Training,TrainingHolder> firebaseRecyclerAdapter;
     private TextView txtCurrentUser, txtUserEmail;
@@ -65,6 +77,7 @@ public class HomeActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         users = FirebaseDatabase.getInstance().getReference().child("UserData");
         training = FirebaseDatabase.getInstance().getReference().child("Training");
+        mainUsers = FirebaseDatabase.getInstance().getReference().child("Users");
         training.keepSynced(true);
 
         trainingRV = (RecyclerView) findViewById(R.id.trainingRecycler);
@@ -134,23 +147,80 @@ public class HomeActivity extends AppCompatActivity
                 holder.cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(HomeActivity.this);
+                        LayoutInflater inflater = LayoutInflater.from(HomeActivity.this);
+                        View detailTrainingLayout = inflater.inflate(R.layout.training_detail,null);
 
-                        /* trainerName = itemTrainingTrainerNameDetail
+                        final TextView title, date, timeStart, timeEnd, type, status, fee, maxParticipant, classType, notes, trainerName;
+                        LinearLayout groupMode, personalMode;
 
-                            linearLayout notes : notesTrainingDetailLinear
-                            notes = notesFromDetail
+                        title = detailTrainingLayout.findViewById(R.id.itemTrainingTitleDetail);
+                        date = detailTrainingLayout.findViewById(R.id.itemTrainingDateDetail);
+                        timeStart = detailTrainingLayout.findViewById(R.id.itemTrainingTimeStartDetail);
+                        timeEnd = detailTrainingLayout.findViewById(R.id.itemTrainingTimeEndDetail);
+                        type = detailTrainingLayout.findViewById(R.id.itemTrainingTypeDetail);
+                        status = detailTrainingLayout.findViewById(R.id.itemTrainingStatusStatus);
+                        fee = detailTrainingLayout.findViewById(R.id.itemTrainingFeeDetail);
+                        classType = detailTrainingLayout.findViewById(R.id.itemTrainingClassTypeDetail);
+                        maxParticipant = detailTrainingLayout.findViewById(R.id.itemTrainingMaxParticipantDetail);
+                        notes = detailTrainingLayout.findViewById(R.id.notesFromDetail);
+                        trainerName = detailTrainingLayout.findViewById(R.id.itemTrainingTrainerNameDetail);
+                        groupMode = detailTrainingLayout.findViewById(R.id.trainingDetailGroup);
+                        personalMode = detailTrainingLayout.findViewById(R.id.notesTrainingDetailLinear);
 
-                            linearLayout group = trainingDetailGroup
-                            classType = itemTrainingClassTypeDetail
-                            maxParticipant = itemTrainingMaxParticipantDetail
+                        //mencari nama pemilik training (trainer)
+                        DatabaseReference DR =  training.child(model.getSessionID()).child("trainingOwner").getRef();
+                        DR.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                final String ownerKey = dataSnapshot.getValue().toString();
+                                mainUsers.child(ownerKey).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        User user = dataSnapshot.getValue(User.class);
+                                        trainerName.setText(user.getFullname());
+                                    }
 
-                            title : itemTrainingTitleDetail
-                            date : itemTrainingDateDetail
-                            timeStart : itemTrainingTimeStartDetail
-                            timeEnd : itemTrainingTimeEndDetail
-                            type : itemTrainingTypeDetail
-                            status : itemTrainingStatusStatus
-                            fee : itemTrainingFeeDetail*/
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        title.setText(model.getTitle());
+                        date.setText(model.getDate());
+                        String traTime = model.getTime();
+                        List<String> TimeList = Arrays.asList(traTime.split(","));
+                        timeStart.setText(TimeList.get(0));
+                        timeEnd.setText(TimeList.get(1));
+                        type.setText(model.getMode());
+                        status.setText(model.getStatus());
+                        fee.setText(model.getFee());
+
+
+                        if(model.getMode().equals("Group")){
+                            groupMode.setVisibility(View.VISIBLE);
+                            String maxPart = model.getMaxParticipant();
+                            List<String> maxPar2 = Arrays.asList(maxPart.split(","));
+                            maxParticipant.setText(maxPar2.get(1));
+                            classType.setText(model.getClassType());
+                        }
+                        else{
+                            personalMode.setVisibility(View.VISIBLE);
+                            notes.setText(model.getNotes());
+                        }
+
+                        dialog.setView(detailTrainingLayout);
+                        dialog.show();
+
+
 
                     }
                 });
@@ -337,6 +407,108 @@ public class HomeActivity extends AppCompatActivity
         return sortQuery;
     }
 
+    private void changePassword(){
+        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(HomeActivity.this,R.style.AlertDialogCustom);
+        alertDialog.setTitle("CHANGE PASSWORD");
+        alertDialog.setMessage("Please fill all information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View layout_pwd = inflater.inflate(R.layout.layout_change_pwd,null);
+
+        final MaterialEditText oldPassword = (MaterialEditText)layout_pwd.findViewById(R.id.edtOldPassword);
+        final MaterialEditText newPassword = (MaterialEditText)layout_pwd.findViewById(R.id.edtNewPassword);
+        final MaterialEditText repeatPassword = (MaterialEditText)layout_pwd.findViewById(R.id.edtRepeatPassword);
+
+        alertDialog.setView(layout_pwd);
+
+        //set Button
+        alertDialog.setPositiveButton("Change Password", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                final android.app.AlertDialog waitingDialog = new SpotsDialog(HomeActivity.this);
+                waitingDialog.show();
+                if(!TextUtils.isEmpty(newPassword.getText().toString()) && !TextUtils.isEmpty(oldPassword.getText().toString()) && !TextUtils.isEmpty(repeatPassword.getText().toString())){
+                    if(newPassword.getText().toString().equals(repeatPassword.getText().toString()))
+                    {
+                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+                        //Get auth credentials from the user for re-authentication
+                        //Example with only email
+                        AuthCredential credential = EmailAuthProvider.getCredential(email,oldPassword.getText().toString());
+                        FirebaseAuth.getInstance().getCurrentUser()
+                                .reauthenticate(credential)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            FirebaseAuth.getInstance().getCurrentUser()
+                                                    .updatePassword(repeatPassword.getText().toString())
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if(task.isSuccessful())
+                                                            {
+                                                                //Update User Information in table
+                                                                Map<String,Object> password = new HashMap<>();
+                                                                password.put("password",repeatPassword.getText().toString());
+
+                                                                mainUsers.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                                        .updateChildren(password)
+                                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                                if(task.isSuccessful()){
+                                                                                    Toast.makeText(HomeActivity.this, "Password was changed", Toast.LENGTH_LONG).show();
+                                                                                }
+                                                                                else
+                                                                                    Toast.makeText(HomeActivity.this, "Password was changed, but not update to database", Toast.LENGTH_SHORT).show();
+                                                                                waitingDialog.dismiss();
+                                                                            }
+                                                                        });
+                                                            }
+                                                            else
+                                                            {
+                                                                Toast.makeText(HomeActivity.this,"Password doesn't change",Toast.LENGTH_SHORT);
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                        else
+                                        {
+                                            waitingDialog.dismiss();
+                                            Toast.makeText(HomeActivity.this, "Wrong Old Password", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+
+                    }
+                    else
+                    {
+                        waitingDialog.dismiss();
+                        Toast.makeText(HomeActivity.this, "Your new password doesn't match", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+                else {
+                    waitingDialog.dismiss();
+                    Toast.makeText(HomeActivity.this, "Fill all field", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        //show dialog
+        alertDialog.show();
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -366,12 +538,11 @@ public class HomeActivity extends AppCompatActivity
             final CharSequence sortType[] = new CharSequence[] {"All", "Group", "Personal"};
 
             AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-            builder.setTitle("Sort Training ");
+            builder.setTitle(Html.fromHtml("<font color='#fc8200'>Sort Training</font>"));
             builder.setItems(sortType, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     getQuery(sortType[which].toString());
-                    //displayAllTraining(sortType[which].toString());
                 }
             });
             builder.show();
@@ -415,10 +586,9 @@ public class HomeActivity extends AppCompatActivity
                 }
             });
             alertDialog.show();
+        }else if (id == R.id.changePwd) {
+            changePassword();
         }
-
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -13,9 +13,17 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/changePwd"
+            android:icon="@drawable/ic_lock"
+            android:title="Change Password" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_logout"
-            android:title="Logout" />
+            android:title="Logout"
+            />
     </group>
 
 </menu>

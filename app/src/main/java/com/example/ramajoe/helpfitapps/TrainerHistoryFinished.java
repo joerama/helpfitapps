@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ramajoe.helpfitapps.Model.Training;
+import com.example.ramajoe.helpfitapps.Model.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,9 +29,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TrainerHistoryFinished extends Fragment {
-    private DatabaseReference training;
-    private DatabaseReference users;
+    private DatabaseReference training, users, mainUsers;
     private RecyclerView trainingRV;
     private FirebaseAuth auth;
 
@@ -41,6 +45,7 @@ public class TrainerHistoryFinished extends Fragment {
 
         users = FirebaseDatabase.getInstance().getReference().child("UserData").getRef();
         training = FirebaseDatabase.getInstance().getReference().child("Training");
+        mainUsers = FirebaseDatabase.getInstance().getReference().child("Users");
         training.keepSynced(true);
         auth = FirebaseAuth.getInstance();
 
@@ -80,7 +85,78 @@ public class TrainerHistoryFinished extends Fragment {
                 holder.cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(), model.getTitle(), Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+                        LayoutInflater inflater = LayoutInflater.from(getContext());
+                        View detailTrainingLayout = inflater.inflate(R.layout.training_detail,null);
+
+                        final TextView title, date, timeStart, timeEnd, type, status, fee, maxParticipant, classType, notes, trainerName;
+                        LinearLayout groupMode, personalMode;
+
+                        title = detailTrainingLayout.findViewById(R.id.itemTrainingTitleDetail);
+                        date = detailTrainingLayout.findViewById(R.id.itemTrainingDateDetail);
+                        timeStart = detailTrainingLayout.findViewById(R.id.itemTrainingTimeStartDetail);
+                        timeEnd = detailTrainingLayout.findViewById(R.id.itemTrainingTimeEndDetail);
+                        type = detailTrainingLayout.findViewById(R.id.itemTrainingTypeDetail);
+                        status = detailTrainingLayout.findViewById(R.id.itemTrainingStatusStatus);
+                        fee = detailTrainingLayout.findViewById(R.id.itemTrainingFeeDetail);
+                        classType = detailTrainingLayout.findViewById(R.id.itemTrainingClassTypeDetail);
+                        maxParticipant = detailTrainingLayout.findViewById(R.id.itemTrainingMaxParticipantDetail);
+                        notes = detailTrainingLayout.findViewById(R.id.notesFromDetail);
+                        trainerName = detailTrainingLayout.findViewById(R.id.itemTrainingTrainerNameDetail);
+                        groupMode = detailTrainingLayout.findViewById(R.id.trainingDetailGroup);
+                        personalMode = detailTrainingLayout.findViewById(R.id.notesTrainingDetailLinear);
+
+                        //mencari nama pemilik training (trainer)
+                        DatabaseReference DR =  training.child(model.getSessionID()).child("trainingOwner").getRef();
+                        DR.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                final String ownerKey = dataSnapshot.getValue().toString();
+                                mainUsers.child(ownerKey).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        User user = dataSnapshot.getValue(User.class);
+                                        trainerName.setText(user.getFullname());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        title.setText(model.getTitle());
+                        date.setText(model.getDate());
+                        String traTime = model.getTime();
+                        List<String> TimeList = Arrays.asList(traTime.split(","));
+                        timeStart.setText(TimeList.get(0));
+                        timeEnd.setText(TimeList.get(1));
+                        type.setText(model.getMode());
+                        status.setText(model.getStatus());
+                        fee.setText(model.getFee());
+
+
+                        if(model.getMode().equals("Group")){
+                            groupMode.setVisibility(View.VISIBLE);
+                            String maxPart = model.getMaxParticipant();
+                            List<String> maxPar2 = Arrays.asList(maxPart.split(","));
+                            maxParticipant.setText(maxPar2.get(1));
+                            classType.setText(model.getClassType());
+                        }
+                        else{
+                            personalMode.setVisibility(View.VISIBLE);
+                            notes.setText(model.getNotes());
+                        }
+
+                        dialog.setView(detailTrainingLayout);
+                        dialog.show();
                     }
                 });
 

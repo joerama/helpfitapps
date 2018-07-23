@@ -10,158 +10,155 @@
     app:cardCornerRadius="12dip">
 
     <LinearLayout
+        android:id="@+id/hideCoba"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/hideCoba"
-        android:background="@drawable/background_item_training">
+        android:background="@drawable/background_item_training"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:weightSum="2"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
             <LinearLayout
-                android:layout_weight="1"
-                android:paddingLeft="10dp"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingLeft="10dp">
 
                 <LinearLayout
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:text="Title : "
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorAccent" />
+                        android:text="Title : "
+                        android:textColor="@color/colorAccent"
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/historyTrainingTitle"
-                        android:text="TITLE"
-                        android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorAccent" />
+                        android:text="TITLE"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:text="Type : "
-                        android:layout_marginTop="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Type : "
                         android:textColor="@color/colorAccent"
-                        />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/historyTrainingType"
-                        android:text="Type"
-                        android:layout_marginTop="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Type"
                         android:textColor="@color/colorAccent"
-                        />
+                        android:textSize="12sp" />
 
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/averageRatingLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="10dp"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/averageRatingLayout"
-                    android:visibility="gone"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp">
+                    android:visibility="gone">
 
                     <TextView
-                        android:text="Rating : "
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:text="Rating : "
                         android:textColor="@color/colorAccent"
-                        android:gravity="center"/>
-
+                        android:textSize="12sp" />
 
 
                     <com.iarcuschin.simpleratingbar.SimpleRatingBar
                         android:id="@+id/averageRatingValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srb_starSize="20dp"
-                        app:srb_stepSize="0.5"
                         android:layout_gravity="center"
                         app:srb_isIndicator="true"
-                        />
+                        app:srb_starSize="15dp"
+                        app:srb_stepSize="0.5" />
 
                 </LinearLayout>
-
 
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="23dp"
+                android:layout_height="25dp"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/finishBtn"
-                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:background="@drawable/background_signup"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:background="@drawable/background_signup"
                     android:text="Click to Finish !"
+                    android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textAllCaps="false"/>
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/giveRatingBtn"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:background="@drawable/background_signup"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:background="@drawable/background_signup"
                     android:text="Give Rating"
+                    android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textAllCaps="false"/>
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/viewRatingBtn"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:background="@drawable/background_signup"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:background="@drawable/background_signup"
                     android:text="View Rating"
+                    android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textAllCaps="false"/>
-
+                    android:visibility="gone" />
 
 
             </LinearLayout>
