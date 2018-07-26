@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ramajoe.helpfitapps.Model.Training;
 import com.example.ramajoe.helpfitapps.Model.User;
@@ -197,7 +196,9 @@ public class TrainerHistoryFinished extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            double af = (double) snapshot.getValue();
+                            Long af = (Long) snapshot.getValue();
+                            //float peoples = Float.valueOf(numOfPeople);
+                            //double af = (double) snapshot.getValue();
                             float fl = (float) af;
                             holder.averageRating.setRating(fl);
                         }

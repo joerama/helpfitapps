@@ -258,7 +258,6 @@ public class MemberHistoryFinished extends Fragment{
                                     }
                                 });
 
-                                //+++++++++
                                 DatabaseReference hasChild = training.child(key).child("averageRating").getRef();
                                 hasChild.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -284,11 +283,6 @@ public class MemberHistoryFinished extends Fragment{
                                             });
 
 
-                            /*Long af = (Long) snapshot.getValue();
-                            float oldRating = Float.valueOf(af);
-                            float newRating = rating.getRating();
-                            float average = (oldRating+newRating)/totalUser;
-                            training.child(key).child("averageRating").setValue(average);*/
                                         }
                                         else {
                                             training.child(key).child("averageRating").setValue(rating.getRating());
@@ -300,7 +294,6 @@ public class MemberHistoryFinished extends Fragment{
 
                                     }
                                 });
-                                //+++++++++
 
                                 Toast.makeText(getContext(), "Success submit ! ", Toast.LENGTH_SHORT).show();
                             }
@@ -312,8 +305,6 @@ public class MemberHistoryFinished extends Fragment{
                             }
                         });
 
-
-                //training.child(key).child("averageRating").setValue(rating.getRating());
             }
         });
 
@@ -324,7 +315,6 @@ public class MemberHistoryFinished extends Fragment{
             }
         });
 
-        //show dialog
         alertDialog.show();
     }
 

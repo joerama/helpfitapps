@@ -2,11 +2,11 @@ package com.example.ramajoe.helpfitapps;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.design.widget.TextInputEditText;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import dmax.dialog.SpotsDialog;
 
@@ -77,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         View register_layout = inflater.inflate(R.layout.activity_register,null);
         final SpotsDialog waitingDialog = new SpotsDialog(LoginActivity.this);
-        //waitingDialog.show();
 
         //get data
         final TextInputEditText name = register_layout.findViewById(R.id.RegName);
@@ -100,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 dialog.dismiss();
                 waitingDialog.show();
-                //Check validation, baru nama, nanti sisanya
+                //Check validation
                 if((TextUtils.isEmpty(name.getText().toString()) ||
                         TextUtils.isEmpty(email.getText().toString()) ||
                         TextUtils.isEmpty(username.getText().toString()) ||
@@ -109,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     Toast.makeText(LoginActivity.this, "Please fill up all data !!", Toast.LENGTH_SHORT).show();
                     waitingDialog.dismiss();
-                    //return;
                 }else{
                     //Register new user
                     mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
@@ -123,11 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                                     user.setEmail(email.getText().toString());
                                     user.setPassword(password.getText().toString());
                                     user.setType(type);
-                                    //user.setAvatarUrl("");
-                                    //user.setAddress("");
-                                    //user.setRates("0")  //--> disini isiin rating
 
-                                    //Use email to key
                                     users.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                             .setValue(user)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -188,17 +181,10 @@ public class LoginActivity extends AppCompatActivity {
                             users.child(mAuth.getCurrentUser().getUid().toString()).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    //Write data to PaperDB for auto login
-                                    //Paper.book().write(Common.user_field,email.getText().toString());
-                                    //Paper.book().write(Common.pwd_field,password.getText().toString());
 
 
                                     User user = dataSnapshot.getValue(User.class);
-                                    //Toast.makeText(Login.this,"us"+user.getName().toString(),Toast.LENGTH_SHORT).show();
                                     Common.currentUser = user;
-
-                                    //update token fot notification
-                                    //userDT.child(mAuth.getCurrentUser().getUid()).child("Token").setValue(FirebaseInstanceId.getInstance().getToken());
 
                                     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                                     finish();
